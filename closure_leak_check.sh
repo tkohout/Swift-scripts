@@ -61,8 +61,42 @@ do
 			if [[ $closure =~ $HAS_SELF_REGEX ]]; then
 					if ! [[ $closure =~ $WEAK_REGEX || $closure =~ $UNOWNED_REGEX ]] ; then
 		
-					echo "$closure" | tr "$NEWLINE_SUBSTITUTE" '\n'
-		   		echo "-----------------"
+					
+					with_lines=`echo "$closure" | tr "$NEWLINE_SUBSTITUTE" '\n'`
+
+					first=`echo "$with_lines"|head -n 1`
+					possible_start=`grep -n "$first" $filename | cut -f1 -d:`
+					
+
+					file=`cat "$filename"`
+					number_of_lines=`echo "$with_lines" | wc -l`
+					
+					while read -r start; do
+						found=true
+						for ((i = 1 ; i < $number_of_lines-1 ; i++ ));
+							do
+							
+							file_top=$(($i+$start-1))
+							file_line=`echo "$file" | head -n "$(($file_top+1))" | tail -1 | sed -e 's/^[ \t]*//'`
+							line=`echo "$with_lines" | head -n "$(($i+1))" | tail -1 | sed -e 's/^[ \t]*//'`
+
+							
+							if  [[ "$line" != "$file_line" ]] ; then
+								found=false
+								break
+							fi
+							done
+
+							if [[ $found == true ]]; then
+								echo "Possible strong retain cycle on line $start:"
+								break
+							fi
+
+    			done <<< "$possible_start"
+
+					
+					echo "$file" | head -n $(($start+$number_of_lines-1)) | tail -n $number_of_lines
+		   		#echo -e "\n\n"
 		   		fi
 			fi
 
