@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 NEWLINE_SUBSTITUTE='`'
 FUNC_REGEX='/func.*?\{(.*?)(func.*)/ms'
-SELF_CLOSURE_REGEX='/(\{[^\}]*?\sin.*?\})(.*)/ms'
+SELF_CLOSURE_REGEX='/('$NEWLINE_SUBSTITUTE'.*?\{[^\}]*?\sin.*?\})(.*)/ms'
 HAS_SELF_REGEX='self\.'
 WEAK_REGEX="\[[[:space:]]*weak[[:space:]]*self[[:space:]]*\]"
 UNOWNED_REGEX="\[[[:space:]]*unowned[[:space:]]*self[[:space:]]*\]"
